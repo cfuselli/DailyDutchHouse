@@ -142,7 +142,3 @@ def scrape_website(html):
 
 # Create an instance of the Website class for website 4
 website = Website(url, example_html, scrape_website)
-
-
-# Run the scrape_example function to test the scraper
-houses = website.scrape_example()
