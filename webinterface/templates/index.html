@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+    <title>House Listings</title>
+
+</head>
+<body>
+
+    <div class="container">
+        <h1>House Listings</h1>
+
+        <div class="container-query">
+            <div class="form-container">
+                <form method="post">
+                    <label for="query">Enter MongoDB Query:</label>
+                    <textarea name="query" id="query" placeholder="e.g., {'city': 'Amsterdam', 'price': {'$lte': 1500}}" rows="4">{{ query_text }}</textarea>
+                    <button type="submit">Submit Query</button>
+                </form>
+            </div>
+        
+            <!-- Example queries -->
+            <div class="example-queries">
+                <h3>Example Queries:</h3>
+                <ul>
+                    <li><a href="#" onclick="copyQuery({'city': {'$regex': 'Amsterdam'}, 'price': {'$lte': 1500}})">Houses in Amsterdam under €1500</a>
+                    </li>
+                </li>
+                </ul>
+            </div>
+        </div>
+        
+
+
+
+<!-- JavaScript to copy the example queries -->
+<script>
+    function copyQuery(query) {
+        document.getElementById('query').value = JSON.stringify(query);
+    }
+</script>
+
+
+
+        {% for house in houses %}
+            <div class="house-container">
+                <div class="text-column">
+                    <h2 class="house-title">House n: {{ house.house_n }}:</h2>
+                    <ul class="details">
+                        <li><strong>Address:</strong> {{ house.address }}</li>
+                        <li><strong>City:</strong> {{ house.city }}</li>
+                        <li><strong>Price:</strong> {{ house.price }} €</li>
+                        <li><strong>Status:</strong> {{ house.status }}</li>
+                        <li><strong>Details:</strong>
+                            <ul>
+                                {% for key, value in house.details.items() %}
+                                    <li>{{ key }}: {{ value }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <li><strong>Link:</strong> <a class="house-link" href="{{ house.link }}">{{ house.link }}</a></li>
+                    </ul>
+                    <p>Posted: <span class="time-difference">{{ house.date }}</span></p>
+                </div>
+                <div class="image-column">
+                    <div class="image-container">
+                        <img src="{{ house.images[0] }}" alt="House Image">
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
+
+</html>
