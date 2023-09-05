@@ -6,23 +6,23 @@ from mongo import db
 import time
 import pymongo
 
-websites = []
+websites_list = []
 
 # They just updated the website ahaha
 # from website_1 import website
 # websites.append(website)
 
-from website_2 import website
-websites.append(website)
+from websites.website_2 import website
+websites_list.append(website)
 
-from website_3 import website
-websites.append(website)
+from websites.website_3 import website
+websites_list.append(website)
 
-from website_4 import website
-websites.append(website)
+from websites.website_4 import website
+websites_list.append(website)
 
-from website_5 import website
-websites.append(website)
+from websites.website_5 import website
+websites_list.append(website)
 
 def scrape_and_insert():
     all_houses = []
@@ -36,7 +36,7 @@ def scrape_and_insert():
     else:
         house_n = 1  # Initialize to 1 if there are no existing houses
 
-    for website in websites:
+    for website in websites_list:
         print("-----------")
         print(f"New website {website.url}")
         print("-----------")
