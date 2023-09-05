@@ -39,10 +39,14 @@ def get_creds(remote=False):
     SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
     if not remote:
+        print("Using local OAuth authentication")
+
         flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
         creds = flow.run_local_server(port=0)
 
     else:
+
+        print("Using remote OAuth authentication")
         creds = None
         if os.path.exists('secrets/token.json'):
             creds = Credentials.from_authorized_user_file('token.json', SCOPES)
@@ -55,7 +59,7 @@ def get_creds(remote=False):
                 creds = flow.run_local_server(port=0)
 
             # Save the credentials for the next run
-            with open('token.json', 'w') as token:
+            with open('secrets/token.json', 'w') as token:
                 token.write(creds.to_json())
 
     return creds
