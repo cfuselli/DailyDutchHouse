@@ -27,9 +27,7 @@ sender_email = _email
 recipient_email = _email
 
 
-def send_message(seconds=3600):
-
-    houses = get_houses(seconds)
+def send_message(houses):
 
     # Create an HTML message with the list of houses
     html_message = """
@@ -271,7 +269,7 @@ def get_houses(seconds=3600):
 
 
 # Initialize a variable to track the time of the last successful execution
-last_execution_time = time.time() - 7200  # Set to 2 hours ago to send the first email
+last_execution_time = time.time() - 7000  # Set to 2 hours ago to send the first email
 
 # Run the script in an infinite loop
 while True:
@@ -280,8 +278,15 @@ while True:
         current_time = time.time()
         seconds_since_last_execution = current_time - last_execution_time
 
+        houses = get_houses(seconds_since_last_execution+300)
+
         # Call the send_message function and pass the seconds_since_last_execution
-        send_message(seconds_since_last_execution)
+        print(f"Found {len(houses)} new houses")
+
+        if len(houses) > 0:
+            send_message(houses)
+            ids = [house["_id"] for house in houses]
+            db.update_many({"_id": {"$in": ids}}, {"$set": {"email_sent":'true'}})
 
         # Update the last_execution_time to the current time
         last_execution_time = current_time
