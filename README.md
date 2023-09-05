@@ -29,3 +29,12 @@ Author: Carlo Fuselli
 - run `python3 send_email.py` to send the emails
 
 
+## This is how it should look like
+
+- Website
+
+![alt text](https://github.com/cfuselli/DailyDutchHouse/blob/main/figures/website.png?raw=true)
+
+- Email
+
+![alt text](https://github.com/cfuselli/DailyDutchHouse/blob/main/figures/email.png?raw=true)
