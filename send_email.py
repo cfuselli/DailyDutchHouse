@@ -49,7 +49,7 @@ def get_creds(remote=False):
         print("Using remote OAuth authentication")
         creds = None
         if os.path.exists('secrets/token.json'):
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+            creds = Credentials.from_authorized_user_file('secrets/token.json', SCOPES)
 
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
