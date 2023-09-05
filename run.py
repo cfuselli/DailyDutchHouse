@@ -8,9 +8,8 @@ import pymongo
 
 websites_list = []
 
-# They just updated the website ahaha
-# from website_1 import website
-# websites.append(website)
+from websites.website_1 import website
+websites_list.append(website)
 
 from websites.website_2 import website
 websites_list.append(website)
