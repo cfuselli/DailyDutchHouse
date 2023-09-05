@@ -9,16 +9,58 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-import pymongo
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
+
+import argparse
+import pymongo
 import time
 from mongo import db
 from datetime import datetime, timedelta
 import os
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
-flow = InstalledAppFlow.from_client_secrets_file('secrets/client_secret_1_819495169002-0sugkiip1v5i8r5j2jsbte0fvb0h59c1.apps.googleusercontent.com.json', SCOPES)
-creds = flow.run_local_server(port=0)
+
+parser = argparse.ArgumentParser(description='Your script description here')
+# Add a --remote flag that's False by default
+parser.add_argument('--remote', action='store_true', help='Use remote OAuth authentication')
+# Parse the command-line arguments
+args = parser.parse_args()
+
+
+
+def get_creds(remote=False):
+
+    credentials_path = 'secrets/client_secret_1_819495169002-0sugkiip1v5i8r5j2jsbte0fvb0h59c1.apps.googleusercontent.com.json'
+
+    if not remote:
+        SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
+        flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
+        creds = flow.run_local_server(port=0)
+
+    else:
+        creds = None
+        if os.path.exists('secrets/token.json'):
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
+                creds = flow.run_local_server(port=0)
+
+            # Save the credentials for the next run
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
+
+    return creds
+
+creds = get_creds(args.remote)
+
 service = build('gmail', 'v1', credentials=creds)
 
 
