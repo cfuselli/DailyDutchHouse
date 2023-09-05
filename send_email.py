@@ -35,9 +35,10 @@ args = parser.parse_args()
 def get_creds(remote=False):
 
     credentials_path = 'secrets/client_secret_1_819495169002-0sugkiip1v5i8r5j2jsbte0fvb0h59c1.apps.googleusercontent.com.json'
+    
+    SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
     if not remote:
-        SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
         flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
         creds = flow.run_local_server(port=0)
 
