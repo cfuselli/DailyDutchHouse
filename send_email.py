@@ -339,7 +339,7 @@ while True:
         last_execution_time = current_time
 
         # Sleep for an hour (3600 seconds) before running again
-        time.sleep(1800)
+        time.sleep(300)
         
     except Exception as e:
         print(f"An error occurred: {e}")
