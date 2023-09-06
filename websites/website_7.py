@@ -55,7 +55,10 @@ def scrape_website(html):
         if link_elem:
             house.link = base_url+link_elem['href']
 
-        house_list.append(house)
+        available = property_elem.find('p', 'availability-caption-2').text.strip()
+        if available == 'Available':
+            if house.link:
+                house_list.append(house)
 
     return house_list
 
