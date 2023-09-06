@@ -23,6 +23,9 @@ websites_list.append(website)
 from websites.website_5 import website
 websites_list.append(website)
 
+from websites.website_6 import website
+websites_list.append(website)
+
 def scrape_and_insert():
     all_houses = []
     add_houses = []
