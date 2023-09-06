@@ -1,20 +1,11 @@
 import base64
-from email.mime.text import MIMEText
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from requests import HTTPError
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-
 
 import argparse
 import pymongo
@@ -304,11 +295,14 @@ def get_houses(seconds=3600):
     # Find houses published in the last hour
     # with prices between 1000 and 1500
     # with the word amsterdam regex in city or address
-    houses = db.find({"date": {"$gte": datetime.now() - timedelta(seconds=seconds)},
-            "price": {"$gte": 1000, "$lte": 1800},
-                "$or": [{"city": {"$regex": "amsterdam", "$options": "i"}},
-                        {"address": {"$regex": "amsterdam", "$options": "i"}}]
-            }).sort("date", pymongo.DESCENDING)
+    houses = db.find({
+        "date": {"$gte": datetime.now() - timedelta(seconds=seconds)},
+        "price": {"$gte": 1000, "$lte": 1800}, "$or": [
+            {"city": {"$regex": "amsterdam", "$options": "i"}},
+            {"address": {"$regex": "amsterdam", "$options": "i"}}
+        ],
+        "email_sent": {"$exists": False}
+        }).sort("date", pymongo.DESCENDING)
 
     houses = [house for house in houses]
 
