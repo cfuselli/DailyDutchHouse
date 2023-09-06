@@ -104,8 +104,9 @@ def scrape_website(html):
                 if image_elem:
                     house.images.append(base_url+image_elem['src'])
 
-                if 'Amsterdam' in house.address:
-                    house_list.append(house)
+                if house.address:
+                    if 'Amsterdam' in house.address:
+                        house_list.append(house)
 
     return house_list
 
