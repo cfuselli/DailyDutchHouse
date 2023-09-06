@@ -18,10 +18,17 @@ import os
 parser = argparse.ArgumentParser(description='Your script description here')
 # Add a --remote flag that's False by default
 parser.add_argument('--remote', action='store_true', help='Use remote OAuth authentication')
+parser.add_argument('--test', action='store_true', help='Test mode')
 # Parse the command-line arguments
 args = parser.parse_args()
 
 
+landlord_message_file = 'secrets/message.txt'
+if os.path.exists(landlord_message_file):
+    with open(landlord_message_file) as f:
+        landlord_message=''.join(line.rstrip() for line in f)
+else:
+    landlord_message = 'Provide message for landlord in secrets/message.txt'
 
 def get_creds(remote=False):
 
@@ -277,7 +284,8 @@ def send_message(houses):
     # Create an email message with HTML content
     message = MIMEMultipart()
     message['to'] = recipient_email
-    message['subject'] = f'House Listings - {len(houses)} new'
+    _test = 'TEST EMAIL - ' if args.test else ''
+    message['subject'] = f'{_test}House Listings - {len(houses)} new'
     message.attach(MIMEText(html_message, 'html'))
 
     try:
@@ -305,6 +313,10 @@ def get_houses(seconds=3600):
         }).sort("date", pymongo.DESCENDING)
     
     houses = [house for house in houses]
+
+    if args.test:
+        houses = db.find()
+        houses = [house for house in houses][:5]
 
     return houses
 
