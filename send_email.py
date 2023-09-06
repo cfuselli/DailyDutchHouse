@@ -303,7 +303,7 @@ def get_houses(seconds=3600):
         ],
         "email_sent": {"$exists": False}
         }).sort("date", pymongo.DESCENDING)
-
+    
     houses = [house for house in houses]
 
     return houses

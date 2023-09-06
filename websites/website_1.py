@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import sys
-sys.path.append('.')
 sys.path.append('../')
 from classes import House, Website
 from common import *
