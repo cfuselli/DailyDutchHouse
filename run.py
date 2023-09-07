@@ -2,35 +2,16 @@ from classes import *
 import pickle
 import os
 from datetime import datetime
-from mongo import db
 import time
 import pymongo
 
-websites_list = []
+from mongo import db
+from maps import get_geodata
 
-from websites.website_1 import website
-websites_list.append(website)
+import get_websites
+import importlib
 
-from websites.website_2 import website
-websites_list.append(website)
-
-from websites.website_3 import website
-websites_list.append(website)
-
-from websites.website_4 import website
-websites_list.append(website)
-
-from websites.website_5 import website
-websites_list.append(website)
-
-from websites.website_6 import website
-websites_list.append(website)
-
-from websites.website_7 import website
-websites_list.append(website)
-
-
-def scrape_and_insert():
+def scrape_and_insert(websites_list):
     all_houses = []
     add_houses = []
 
@@ -75,6 +56,11 @@ def scrape_and_insert():
 
     add_dicts = [house.to_dict() for house in add_houses]
 
+    # Populate geodata
+    for house in add_dicts:
+        geodata = get_geodata(house)
+        house['geodata'] = geodata
+
     if add_dicts:
         db.insert_many(add_dicts)
 
@@ -85,7 +71,10 @@ def scrape_and_insert():
 # Run the script in an infinite loop
 while True:
     try:
-        scrape_and_insert()
+
+        importlib.reload(get_websites)
+        websites_list = get_websites.get_websites_list()
+        scrape_and_insert(websites_list)
         # Sleep for an hour (3600 seconds) before running again
         time.sleep(300)
     except Exception as e:

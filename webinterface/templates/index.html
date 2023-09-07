@@ -46,33 +46,46 @@
 
 
 
-        {% for house in houses %}
-            <div class="house-container">
-                <div class="text-column">
-                    <h2 class="house-title">House n: {{ house.house_n }}:</h2>
-                    <ul class="details">
-                        <li><strong>Address:</strong> {{ house.address }}</li>
-                        <li><strong>City:</strong> {{ house.city }}</li>
-                        <li><strong>Price:</strong> {{ house.price }} €</li>
-                        <li><strong>Status:</strong> {{ house.status }}</li>
-                        <li><strong>Details:</strong>
-                            <ul>
-                                {% for key, value in house.details.items() %}
-                                    <li>{{ key }}: {{ value }}</li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        <li><strong>Link:</strong> <a class="house-link" href="{{ house.link }}">{{ house.link }}</a></li>
+{% for house in houses %}
+    <div class="house-container">
+        <div class="text-column">
+            <h2 class="house-title">House n: {{ house.house_n }}:</h2>
+            <ul class="details">
+                <li><strong>Address:</strong> {{ house.address }}</li>
+                <li><strong>City:</strong> {{ house.city }}</li>
+                <li><strong>Price:</strong> {{ house.price }} €</li>
+                <li><strong>Status:</strong> {{ house.status }}</li>
+                <li><strong>Details:</strong>
+                    <ul>
+                        {% for key, value in house.details.items() %}
+                            <li>{{ key }}: {{ value }}</li>
+                        {% endfor %}
                     </ul>
-                    <p>Posted: <span class="time-difference">{{ house.date }}</span></p>
+                </li>
+                <li><strong>Link:</strong> <a class="house-link" href="{{ house.link }}">{{ house.link }}</a></li>
+            </ul>
+            <p>Posted: <span class="time-difference">{{ house.date }}</span></p>
+        </div>
+        <div class="image-column">
+            <div class="image-map-container">
+                <div class="image-container">
+                    <img width="200" src="{{ house.images[0] }}" alt="House Image">
                 </div>
-                <div class="image-column">
-                    <div class="image-container">
-                        <img src="{{ house.images[0] }}" alt="House Image">
-                    </div>
+                {% if house.geodata %}
+                <div class="map-container">
+                    <img width="200" src="https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=300&center=lonlat:{{ house.geodata.coordinates[0] }},{{ house.geodata.coordinates[1] }}&zoom=13&apiKey={{ api_key_geoapify }}&marker=lonlat:{{ house.geodata.coordinates[0] }},{{ house.geodata.coordinates[1] }}" alt="Map">
                 </div>
+                {% else %}
+                <p>No geodata available for this house.</p>
+                {% endif %}
             </div>
-        {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
+
+
+
     </div>
 </body>
 
