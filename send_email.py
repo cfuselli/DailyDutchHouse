@@ -22,11 +22,9 @@ import json
 
 parser = argparse.ArgumentParser(description='Your script description here')
 # Add a --remote flag that's False by default
-parser.add_argument('--remote', action='store_true', help='Use remote OAuth authentication')
+parser.add_argument('--local', action='store_true', help='Use local OAuth authentication')
 parser.add_argument('--test', action='store_true', help='Test mode')
 parser.add_argument('--user', default='carlo', help='User name, to be defined in secrets/user_queries.json')
-# Parse the command-line arguments
-args = parser.parse_args()
 
 def get_secrets():
     with open('secrets/secrets.json', 'r') as config_file:
@@ -38,13 +36,13 @@ def get_user(user):
         user_queries = json.load(f)
     return user_queries[user]
 
-def get_creds(remote=False):
+def get_creds(local=False):
 
     credentials_path = 'secrets/client_secret_1_819495169002-0sugkiip1v5i8r5j2jsbte0fvb0h59c1.apps.googleusercontent.com.json'
     
     SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
-    if not remote:
+    if local:
         print("Using local OAuth authentication")
 
         flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
@@ -147,20 +145,21 @@ def get_landlord_message():
     return landlord_message
 
 
+# Parse the command-line arguments
+args = parser.parse_args()
 
 secrets = get_secrets()
 
-creds = get_creds(args.remote)
+creds = get_creds(local=args.local)
 
 service = build('gmail', 'v1', credentials=creds)
 
 sender_email = os.environ.get('DAILYDUTCHHOUSE_EMAIL')
 
 user = args.user
-user_info = get_user(user)
 
-recipient_email = user_info['email']
-user_query = user_info['query']
+# Set frequency of emails  
+sleep_time = 30 # seconds
 
 # Initialize a variable to track the time of the last successful execution
 last_execution_time = time.time() - 7000  # Set to 2 hours ago to send the first email
@@ -172,6 +171,12 @@ while True:
         current_time = time.time()
         seconds_since_last_execution = current_time - last_execution_time
 
+        # Let's fetch continuously the user info, in case it changes
+        user_info = get_user(user)
+        recipient_email = user_info['email']
+        user_query = user_info['query']
+
+        # Call the get_houses function and pass the user_query and seconds_since_last_execution
         houses = get_houses(user_query, seconds_since_last_execution+1000)
 
         # Call the send_message function and pass the seconds_since_last_execution
@@ -186,9 +191,9 @@ while True:
         last_execution_time = current_time
 
         # Sleep for an hour (3600 seconds) before running again
-        time.sleep(30)
+        time.sleep(sleep_time)
         
     except Exception as e:
         print(f"An error occurred: {e}")
-        time.sleep(30)
+        time.sleep(sleep_time)
 
