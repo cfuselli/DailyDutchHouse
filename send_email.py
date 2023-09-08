@@ -19,7 +19,6 @@ import os
 import re
 import json 
 
-
 parser = argparse.ArgumentParser(description='Your script description here')
 # Add a --remote flag that's False by default
 parser.add_argument('--local', action='store_true', help='Use local OAuth authentication')

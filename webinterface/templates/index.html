@@ -40,6 +40,15 @@
                 <ul>
                     <li><a href="#" onclick="copyQuery({'city': {'$regex': 'Amsterdam'}, 'price': {'$lte': 1500}})">Houses in Amsterdam under €1500</a>
                     </li>
+                    <li><a href="#" onclick="copyQuery({
+                        'price': {'$gte': 1000, '$lte': 1800}, 
+                        '$or': [
+                            {'city': {'$regex': 'amsterdam', '$options': 'i'}},
+                            {'address': {'$regex': 'amsterdam', '$options': 'i'}}
+                            ],
+                        'geodata.postcode': {'$regex': '^(1011|1012|1013|1014|1015|1016|1017|1018|1019|1051|1052|1053|1054|1055|1056|1057|1058|1059|1071|1072|1073|1074|1075|1076|1077|1078|1079|1091|1092|1093|1094|1095|1096|1097|1098)'}
+                        })">Amsterdam ring under €1800</a>
+                    </li>
                 </li>
                 </ul>
             </div>
