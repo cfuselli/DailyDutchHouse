@@ -25,7 +25,8 @@ class House:
             "details": self.details,
             "link": self.link,
             "date": self.date,
-            "house_n": self.house_n
+            "house_n": self.house_n,
+            "email_sent": [],
         }
         return house_dict
 

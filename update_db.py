@@ -15,7 +15,7 @@ from maps import get_geodata
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--update", help="update price and link or geodata",
-                    choices=["price_and_link", "geodata"],
+                    choices=["price_and_link", "geodata", "email_sent_default"],
                     default=None)
 
 
@@ -76,5 +76,11 @@ if what_to_update == "geodata":
 
             print(f"Updated {update_result.modified_count} house(s)")
 
+if what_to_update == "email_sent_default":
+
+    # If email_sent is not in the house, add it with an empty list
+    update_result = db.update_many({"email_sent": {"$exists": False}}, {"$set": {"email_sent": []}})
+    
+    print(f"Updated {update_result.modified_count} house(s)")
 
 print("Finished updating")
