@@ -221,3 +221,19 @@
             flex: none;
         }
     }
+
+
+    /* Style for the navigation buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #0056b3; /* Darker color on hover */
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <title>House Listings Statistics</title>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/" class="btn">Back to Home</a>
+
+        <h1>House Listings Statistics</h1>
+        <p>Total Houses: {{ total_houses }}</p>
+        <p>Houses in the Last 24 Hours: {{ houses_last_24_hours }}</p>
+        <p>--</p>
+        <p>Houses in the filter: {{ total_houses_filter }}</p>
+        <p>Houses in the Last 24 Hours in the filter: {{ houses_last_24_hours_filter }}</p>
+        <h2>Last House Published on Each Website</h2>
+        <ul>
+            {% for website in sorted_websites %}
+                <li>{{ website }} - {{ last_houses[website] }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+<script src="static/scripts.js"></script>
+</html>
