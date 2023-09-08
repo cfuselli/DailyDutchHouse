@@ -171,3 +171,53 @@
     max-width: 100%; /* Ensure the map is responsive */
     height: auto;
 }
+
+
+
+
+
+
+    /* Your common styles here */
+
+    .house-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .text-column {
+        flex: 2;
+        /* Add your text column styles here */
+    }
+
+    .image-column {
+        flex: 1;
+        /* Add your image column styles here */
+    }
+
+    .image-map-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .image-container {
+        /* Add your image styles here */
+    }
+
+    .map-container {
+        /* Add your map styles here */
+    }
+
+    /* Media query for screens with a max width of 768px (adjust as needed) */
+    @media screen and (max-width: 768px) {
+        .house-container {
+            flex-direction: column;
+        }
+
+        .text-column {
+            flex: none;
+        }
+
+        .image-column {
+            flex: none;
+        }
+    }

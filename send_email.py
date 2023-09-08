@@ -7,12 +7,17 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+import jinja2
+from jinja2 import Template
+
 import argparse
 import pymongo
 import time
 from mongo import db
 from datetime import datetime, timedelta
 import os
+import re
+import json 
 
 
 parser = argparse.ArgumentParser(description='Your script description here')
@@ -29,6 +34,9 @@ if os.path.exists(landlord_message_file):
         landlord_message=''.join(line.rstrip() for line in f)
 else:
     landlord_message = 'Provide message for landlord in secrets/message.txt'
+
+with open('secrets/secrets.json', 'r') as config_file:
+    secrets = json.load(config_file)
 
 def get_creds(remote=False):
 
@@ -71,8 +79,32 @@ _email = os.environ.get('DAILYDUTCHHOUSE_EMAIL')
 sender_email = _email
 recipient_email = _email
 
+def get_html_message(houses):
 
-def send_message(houses):
+    with open('webinterface/static/styles.css', 'r') as css_file:
+        css_content = css_file.read()
+
+    # Load your HTML template
+    with open('webinterface/templates/index.html', 'r') as template_file:
+        template_content = template_file.read()
+
+    # Create a Jinja2 template
+    template = Template(template_content)
+
+    # Render the template with the house data
+    rendered_html = template.render(houses=houses,
+                                    api_key_geoapify=secrets['api_key_geoapify'])
+
+    rendered_html = re.sub('exclude_from_email.*?end_exclude_from_email','',rendered_html, flags=re.DOTALL)
+
+    # Add the CSS to the HTML
+    rendered_html = rendered_html.replace('</head>', f'<style>{css_content}</style></head>')
+
+    return rendered_html
+
+
+
+def _get_html_message(house):
 
     # Create an HTML message with the list of houses
     html_message = """
@@ -280,6 +312,12 @@ def send_message(houses):
     </body>
     </html>
     """
+
+
+
+def send_message(houses):
+
+    html_message = get_html_message(houses)
 
     # Create an email message with HTML content
     message = MIMEMultipart()
