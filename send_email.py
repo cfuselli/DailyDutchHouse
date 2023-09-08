@@ -85,6 +85,7 @@ def get_html_message(houses):
                                     api_key_geoapify=secrets['api_key_geoapify'])
 
     rendered_html = re.sub('exclude_from_email.*?end_exclude_from_email','',rendered_html, flags=re.DOTALL)
+    rendered_html = re.sub('exclude_from_email_2.*?end_exclude_from_email_2','',rendered_html, flags=re.DOTALL)
 
     # Add the CSS to the HTML
     rendered_html = rendered_html.replace('</head>', f'<style>{css_content}</style></head>')
