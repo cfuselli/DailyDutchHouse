@@ -186,7 +186,8 @@ while True:
         if len(houses) > 0:
             send_message(houses)
             ids = [house["_id"] for house in houses]
-            db.update_many({"_id": {"$in": ids}}, {"$set": {"email_sent":user}})
+
+            db.update_many({"_id": {"$in": ids}}, {"$addToSet": {"email_sent": user}})
 
         # Update the last_execution_time to the current time
         last_execution_time = current_time
