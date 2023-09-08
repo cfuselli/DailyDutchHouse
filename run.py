@@ -58,7 +58,7 @@ def scrape_and_insert(websites_list):
 
     # Populate geodata
     for house in add_dicts:
-        geodata = get_geodata(house)
+        geodata = get_geodata(house['address']+" "+house['city'])
         house['geodata'] = geodata
 
     if add_dicts:

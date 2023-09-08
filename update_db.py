@@ -8,27 +8,45 @@ import pymongo
 import get_websites
 from maps import get_geodata
 
-websites = get_websites.get_websites_list()
-
-all_houses = []
-
-what_to_update = "geodata"
-
-for website in websites:
-    print("-----------")
-    print(f"New website {website.url}")
-    print("-----------")
-
-    houses = website.scrape_example()
-
-    for i, house in enumerate(houses):
-
-        all_houses.append(house)
 
 
+# Add argument to update price and link or geodata
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--update", help="update price and link or geodata",
+                    choices=["price_and_link", "geodata"],
+                    default=None)
+
+
+args = parser.parse_args()
+
+
+what_to_update = args.update
+
+
+
+def get_all_houses_scraped():
+    websites = get_websites.get_websites_list()
+    all_houses = []
+
+    for website in websites:
+        print("-----------")
+        print(f"New website {website.url}")
+        print("-----------")
+
+        houses = website.scrape_example()
+
+        for i, house in enumerate(houses):
+
+            all_houses.append(house)
+
+    return all_houses
 
 # Loop through the update values
 if what_to_update == "price_and_link":
+
+    all_houses = get_all_houses_scraped()
     for house in all_houses:
 
         address = house.address
@@ -45,17 +63,15 @@ if what_to_update == "price_and_link":
         print(f"Updated {update_result.modified_count} house(s)")
 
 if what_to_update == "geodata":
-    for house in all_houses:
+    
+    db_houses = db.find()
+    for house in db_houses:
 
-        # check if the geodata['place_id'] exists
+        if 'place_id' not in house.get('geodata', {}).keys():
 
-        get_house = db.find_one({'link': house.link})
+            geodata = get_geodata(house['address']+" "+house['city'])
 
-        if 'place_id' not in get_house.get('geodata', {}).keys():
-
-            geodata = get_geodata(house)
-
-            update_result = db.update_one({'link': house.link},
+            update_result = db.update_one({'link': house['link']},
                                         {'$set': {'geodata': geodata}})
 
             print(f"Updated {update_result.modified_count} house(s)")

@@ -42,15 +42,8 @@ def clean_string(city_address):
     return city_address
 
 
-def get_geodata(house):
+def get_geodata(query):
 
-    try:
-        address = house['address']
-        city = house['city']
-    except:
-        address = house.address
-        city = house.city
-    query = (address+' '+city)
     query = clean_string(query)
     url = template.format(query)
     data = requests.get(url).json()
@@ -69,43 +62,105 @@ def get_geodata(house):
             return result
         
         else:
-            print("Returned no features")
-            print(house.link)
+
+            print("Returned no features, trying combinations")
+            combs = get_missing_words_combi(query)
+            for i,comb in enumerate(combs):
+                print(f"Trying combination {i+1}/{len(combs)}")
+                url = template.format(comb)
+                data = requests.get(url).json()
+                if len(data['features']) > 0:
+                    result = data['features'][0]['properties']['geocoding']
+                    result['coordinates'] = data['features'][0]['geometry']['coordinates']
+
+                    return result
+                
+            print(f"Returned no features for query {query}")
             print(json.dumps(data, indent=4))
             return {}
     else:
 
-        print("Returned no results")
+        print("Something went wrong")
         print(house.link)
         print(json.dumps(data, indent=4))
         return {}
 
 
+def get_missing_words_combi(query):
+
+    from itertools import combinations
+
+    # Input string containing words
+    input_string = query.replace('+', ' ')
+
+    # Split the input string into words
+    words = input_string.split()
+
+    # Generate all combinations of indices for one missing word
+    combinations_indices_one_missing = list(combinations(range(len(words)), 1))
+
+    # Generate all combinations of indices for two missing words
+    combinations_indices_two_missing = list(combinations(range(len(words)), 2))
+
+    # Generate all combinations of indices for three missing words
+    combinations_indices_three_missing = list(combinations(range(len(words)), 3))
+
+    # Generate a list of strings with one missing word for each combination
+    missing_word_strings_one_missing = []
+    for indices in combinations_indices_one_missing:
+        missing_words = words.copy()
+        for index in indices:
+            missing_words[index] = ""
+        missing_word_string = " ".join(missing_words)
+        missing_word_strings_one_missing.append(missing_word_string)
+
+    # Generate a list of strings with two missing words for each combination
+    missing_word_strings_two_missing = []
+    for indices in combinations_indices_two_missing:
+        missing_words = words.copy()
+        for index in indices:
+            missing_words[index] = ""
+        missing_word_string = " ".join(missing_words)
+        missing_word_strings_two_missing.append(missing_word_string)
+
+    # Generate a list of strings with three missing words for each combination
+    missing_word_strings_three_missing = []
+    for indices in combinations_indices_three_missing:
+        missing_words = words.copy()
+        for index in indices:
+            missing_words[index] = ""
+        missing_word_string = " ".join(missing_words)
+        missing_word_strings_three_missing.append(missing_word_string)
+
+    # Combine the lists of strings with one, two, and three missing words
+    combined_missing_word_strings = (
+        missing_word_strings_one_missing
+        + missing_word_strings_two_missing
+        + missing_word_strings_three_missing
+    )
+
+    combined_missing_word_strings = [c.replace(' ', '+') for c in combined_missing_word_strings]
+
+    return combined_missing_word_strings
 
 test = False
 if test:
-    from mongo import db
-    houses = db.find()
-    houses = [house for house in houses]
-    print(f"Found {len(houses)} houses")
 
-    for i,house in enumerate(houses[::-1]):
-        address = house['address']
-        city = house['city']
-        query = (address+' '+city)
-        query = clean_string(query)
-        url = template.format(query)
-        data = requests.get(url).json()
+    print("Testing get_geodata()")
+    query = "Beethovenstraat IV  1077 JA Amsterdam"
+    query = clean_string(query)
+    url = template.format(query)
+    data = requests.get(url).json()
+    print(json.dumps(data, indent=4))
 
-        for f in data['features']:
+    for f in data['features']:
 
-            print(house['address'])
-            print(house['city'])
-            print(f['properties']['geocoding']['label'])
-            print(f['geometry']['coordinates'])
-            print()
+        print(query)
+        print(f['properties']['geocoding']['label'])
+        print(f['geometry']['coordinates'])
+        print()
 
-        time.sleep(1.1)
+    time.sleep(1.1)
 
 
 # https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=400&center=lonlat:4.8911942,52.3663442&zoom=13&apiKey={api_key_geoapify}&marker=lonlat:4.8911942,52.3663442
