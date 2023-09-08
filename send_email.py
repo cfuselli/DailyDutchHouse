@@ -24,19 +24,19 @@ parser = argparse.ArgumentParser(description='Your script description here')
 # Add a --remote flag that's False by default
 parser.add_argument('--remote', action='store_true', help='Use remote OAuth authentication')
 parser.add_argument('--test', action='store_true', help='Test mode')
+parser.add_argument('--user', default='carlo', help='User name, to be defined in secrets/user_queries.json')
 # Parse the command-line arguments
 args = parser.parse_args()
 
+def get_secrets():
+    with open('secrets/secrets.json', 'r') as config_file:
+        secrets = json.load(config_file)
+    return secrets
 
-landlord_message_file = 'secrets/message.txt'
-if os.path.exists(landlord_message_file):
-    with open(landlord_message_file) as f:
-        landlord_message=''.join(line.rstrip() for line in f)
-else:
-    landlord_message = 'Provide message for landlord in secrets/message.txt'
-
-with open('secrets/secrets.json', 'r') as config_file:
-    secrets = json.load(config_file)
+def get_user(user):
+    with open('secrets/user_queries.json', 'r') as f:
+        user_queries = json.load(f)
+    return user_queries[user]
 
 def get_creds(remote=False):
 
@@ -69,15 +69,6 @@ def get_creds(remote=False):
                 token.write(creds.to_json())
 
     return creds
-
-creds = get_creds(args.remote)
-
-service = build('gmail', 'v1', credentials=creds)
-
-
-_email = os.environ.get('DAILYDUTCHHOUSE_EMAIL')
-sender_email = _email
-recipient_email = _email
 
 def get_html_message(houses):
 
@@ -124,28 +115,52 @@ def send_message(houses):
     return message
 
 
-def get_houses(seconds=3600):
+def get_houses(query, seconds=3600):
 
     # Find houses published in the last hour
     # with prices between 1000 and 1500
     # with the word amsterdam regex in city or address
-    houses = db.find({
-        "date": {"$gte": datetime.now() - timedelta(seconds=seconds)},
-        "price": {"$gte": 1000, "$lte": 1800}, "$or": [
-            {"city": {"$regex": "amsterdam", "$options": "i"}},
-            {"address": {"$regex": "amsterdam", "$options": "i"}}
-        ],
-        "email_sent": {"$exists": False}
-        }).sort("date", pymongo.DESCENDING)
+
+    query['date'] = {"$gte": datetime.now() - timedelta(seconds=seconds)}
+    query['email_sent'] = {"$nin": ['true', user]}
     
+    houses = db.find(query).sort("date", pymongo.DESCENDING)
     houses = [house for house in houses]
 
     if args.test:
-        houses = db.find()
+        query['date'] = {"$gte": datetime.now() - timedelta(days=100)}
+        houses = db.find(query).sort("date", pymongo.DESCENDING)
         houses = [house for house in houses][:5]
 
     return houses
 
+def get_landlord_message():
+    """For now not used"""
+
+    landlord_message_file = 'secrets/message.txt'
+    if os.path.exists(landlord_message_file):
+        with open(landlord_message_file) as f:
+            landlord_message=''.join(line.rstrip() for line in f)
+    else:
+        landlord_message = 'Provide message for landlord in secrets/message.txt'
+
+    return landlord_message
+
+
+
+secrets = get_secrets()
+
+creds = get_creds(args.remote)
+
+service = build('gmail', 'v1', credentials=creds)
+
+sender_email = os.environ.get('DAILYDUTCHHOUSE_EMAIL')
+
+user = args.user
+user_info = get_user(user)
+
+recipient_email = user_info['email']
+user_query = user_info['query']
 
 # Initialize a variable to track the time of the last successful execution
 last_execution_time = time.time() - 7000  # Set to 2 hours ago to send the first email
@@ -157,7 +172,7 @@ while True:
         current_time = time.time()
         seconds_since_last_execution = current_time - last_execution_time
 
-        houses = get_houses(seconds_since_last_execution+300)
+        houses = get_houses(user_query, seconds_since_last_execution+1000)
 
         # Call the send_message function and pass the seconds_since_last_execution
         print(f"Found {len(houses)} new houses")
@@ -165,7 +180,7 @@ while True:
         if len(houses) > 0:
             send_message(houses)
             ids = [house["_id"] for house in houses]
-            db.update_many({"_id": {"$in": ids}}, {"$set": {"email_sent":'true'}})
+            db.update_many({"_id": {"$in": ids}}, {"$set": {"email_sent":user}})
 
         # Update the last_execution_time to the current time
         last_execution_time = current_time
@@ -176,3 +191,4 @@ while True:
     except Exception as e:
         print(f"An error occurred: {e}")
         time.sleep(30)
+
