@@ -32,6 +32,7 @@ def scrape_website(html):
         price_elem = property_elem.find_all('p', class_='price-text-small-5')
         if price_elem:
             price = price_elem[1].text.strip()
+            price = get_price(price)
             house.price = price
 
         # Extract details
