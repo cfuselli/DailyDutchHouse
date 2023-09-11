@@ -15,7 +15,7 @@ from maps import get_geodata
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--update", help="update price and link or geodata",
-                    choices=["price_and_link", "geodata", "email_sent_default"],
+                    choices=["price_and_link", "geodata", "email_sent_default", "fix_wrong_link"],
                     default=None)
 
 
@@ -82,5 +82,19 @@ if what_to_update == "email_sent_default":
     update_result = db.update_many({"email_sent": {"$exists": False}}, {"$set": {"email_sent": []}})
     
     print(f"Updated {update_result.modified_count} house(s)")
+
+
+if what_to_update == 'fix_wrong_link':
+
+    # The links that contain the following string are wrong
+    wrong_link = 'https://househunting.nlhttps://'
+
+    # Let's find all the houses that have a link that contains the wrong link
+    houses = db.find({'link': {'$regex': wrong_link}})
+    for house in houses:
+        # Replace the wrong link with the correct link
+        new_link = house['link'].replace(wrong_link, 'https://')
+        update_result = db.update_one({'link': house['link']}, {'$set': {'link': new_link}})
+        print(f"Updated {update_result.modified_count} house(s)")
 
 print("Finished updating")
