@@ -57,23 +57,26 @@ class House:
             file.write(f"Link: {self.link}\n\n")
 
 class Website:
-    def __init__(self, url, example_html, parser):
+    def __init__(self, url, example_html=None, parser=None):
         self.url = url
         self.example_html = example_html
         self.parser = parser
         self.houses = []
+        self.headers = {
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36"}
 
     def scrape(self, html):
-        self.houses = self.parser(html)
-        return self.houses
-
-
+        if self.parser:
+            self.houses = self.parser(html)
+            return self.houses
+        else:
+            print("No parser defined")
+            return []
+        
     def scrape_example(self):
-        headers = {
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36",
-        }
            
-        response = requests.get(self.url, headers=headers)
+        response = requests.get(self.url, headers=self.headers)
+
         if response.status_code == 200:
             html = response.text
             return self.scrape(html)

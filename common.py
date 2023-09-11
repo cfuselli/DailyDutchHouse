@@ -1,8 +1,9 @@
 import re
 
-def get_price(text):
+def get_price(text, keep_comma=False):
 
-    text = text.split(",")[0]
+    if not keep_comma:
+        text = text.split(",")[0]
     text = re.sub(r'\D', '', text)
 
     if len(text) == 0:
