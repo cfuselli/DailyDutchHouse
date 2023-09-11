@@ -31,7 +31,7 @@ def scrape_website(html):
         img_tag = article.find('img')
         if img_tag and 'src' in img_tag.attrs:
             house.images.append(img_tag['src'])
-            
+
 
         # Address and City
         address_container = article.find('h2', class_='property_name')
@@ -64,12 +64,12 @@ website = Website(url, example_html, scrape_website)
 
 
 # Run the scrape_example function to test the scraper
-houses = website.scrape_example()
+# houses = website.scrape_example()
 
 
-# # Print the results
-for house in houses[::-1]:
-    house.print()
-    print()
+# # # Print the results
+# for house in houses[::-1]:
+#     house.print()
+#     print()
 
 
