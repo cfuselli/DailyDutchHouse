@@ -28,7 +28,8 @@ def get_websites_list():
     from websites.website_7 import website
     websites_list.append(website)
 
-
+    from websites.website_8 import website
+    websites_list.append(website)
 
     from websites.website_9 import website
     websites_list.append(website)
