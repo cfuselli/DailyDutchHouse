@@ -38,7 +38,7 @@ def scrape_website(html):
         # Extract link
         link_elem = house_element.find('a', href=True)
         if link_elem:
-            house.link = base_url+link_elem['href']
+            house.link = link_elem['href']
 
         houses.append(house)
 
@@ -46,10 +46,10 @@ def scrape_website(html):
 
 website = Website(url, example_html, scrape_website)
 
-# #Run the scrape_example function to test the scraper
-# houses = website.scrape_example()
+#Run the scrape_example function to test the scraper
+houses = website.scrape_example()
 
-# # Print the results
-# for house in houses[::-1]:
-#     house.print()
-#     print()
+# Print the results
+for house in houses[::-1]:
+    house.print()
+    print()
