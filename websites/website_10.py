@@ -5,7 +5,6 @@ sys.path.append('../')
 from classes import House, Website
 from common import *
 
-
 url = "https://www.expathousing.com/?search-listings=true"
 
 example_html = """
