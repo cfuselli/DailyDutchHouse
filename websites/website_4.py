@@ -91,10 +91,9 @@ example_html = """
             </section>"""
 
 
-
 def scrape_website(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    property_elements = soup.find_all('section', class_='listing-search-item')
+    soup = BeautifulSoup(html, "html.parser")
+    property_elements = soup.find_all("section", class_="listing-search-item")
 
     house_list = []
 
@@ -102,43 +101,51 @@ def scrape_website(html):
         house = House()
 
         # Extract title and address
-        title_elem = property_elem.find('h2', class_='listing-search-item__title')
+        title_elem = property_elem.find("h2", class_="listing-search-item__title")
         title_text = title_elem.text.strip()
         house.address = title_text
 
-        sub_title_elem = property_elem.find('div', class_="listing-search-item__sub-title'")        
+        sub_title_elem = property_elem.find(
+            "div", class_="listing-search-item__sub-title'"
+        )
         if sub_title_elem:
             house.city = sub_title_elem.text.strip()
-        
 
         # Extract price
-        price_elem = property_elem.find('div', class_='listing-search-item__price')
+        price_elem = property_elem.find("div", class_="listing-search-item__price")
         if price_elem:
             price = get_price(price_elem.text.strip())
             house.price = price
 
         # Extract details
-        features_elem = property_elem.find('ul', class_='illustrated-features')
+        features_elem = property_elem.find("ul", class_="illustrated-features")
         if features_elem:
-            detail_items = features_elem.find_all('li', class_='illustrated-features__item')
+            detail_items = features_elem.find_all(
+                "li", class_="illustrated-features__item"
+            )
             for detail_item in detail_items:
                 key = detail_item.text.strip()
-                house.details[key] = ''
+                house.details[key] = ""
 
         # Extract images from a more complex structure
-        img_elem = property_elem.find('img', class_='picture__image', alt=True, src=True)
+        img_elem = property_elem.find(
+            "img", class_="picture__image", alt=True, src=True
+        )
         if img_elem:
-            image_url = img_elem['src']
+            image_url = img_elem["src"]
             house.images.append(image_url)
 
         # Extract link
-        link_elem = property_elem.find('a', class_='listing-search-item__link--title', href=True)
+        link_elem = property_elem.find(
+            "a", class_="listing-search-item__link--title", href=True
+        )
         if link_elem:
-            house.link = 'https://www.pararius.nl'+link_elem['href']
+            house.link = "https://www.pararius.nl" + link_elem["href"]
 
         house_list.append(house)
 
     return house_list
+
 
 # Create an instance of the Website class for website 4
 website = Website(url, example_html, scrape_website)

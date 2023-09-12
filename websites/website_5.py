@@ -21,60 +21,65 @@ example_html = """
                     De Graaf &amp; Groot Makelaars
                 </a> <div class="ml-auto" data-v-71621df9=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" role="presentation" viewBox="0 0 48 48"><path fill="#005AD2" d="M10.626 35l5.452 5.342v-5.184H18V44h-.64l-5.439-5.368v5.21H10V35h.626zm10.546 0l2.342 5.357L25.842 35H28l-4.174 9h-.639L19 35h2.172zm8.44 0l3.888 4.781L37.387 35H38v9h-1.88v-4.714l-2.313 2.786h-.614l-2.312-2.786V44H29v-9h.613zm6.34-31C37.084 4 38 4.901 38 6.012v24.873C38 31.5 37.491 32 36.865 32h-6.24a1.125 1.125 0 01-1.135-1.115v-8.541c0-1.269 1.046-2.297 2.336-2.297h.233c2.11 0 3.823-1.682 3.823-3.758 0-2.077-1.712-3.759-3.823-3.759-2.11 0-3.822 1.682-3.822 3.759l.013 14.596c0 .616-.508 1.115-1.136 1.115h-6.229a1.125 1.125 0 01-1.135-1.115l.013-14.596c0-2.077-1.71-3.759-3.822-3.759-2.111 0-3.823 1.682-3.823 3.759 0 2.076 1.712 3.758 3.823 3.758h.233c1.29 0 2.336 1.028 2.336 2.297v8.54c0 .617-.508 1.116-1.135 1.116h-6.24A1.125 1.125 0 0110 30.885V6.012C10 4.902 10.917 4 12.047 4l8.415.01c1.647 0 2.982 1.313 2.982 2.931l-.151.049c-1.741.327-3.056 1.832-3.056 3.639 0 1.98 1.58 3.597 3.568 3.7l.195.004.195-.005c1.988-.102 3.568-1.72 3.568-3.7 0-1.806-1.316-3.311-3.056-3.638l-.152-.049c0-1.618 1.336-2.931 2.982-2.931L35.953 4z"></path></svg> <!----> <!----> <!----></div></div></div></div> <!----></div>"""
 
+
 def scrape_website(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    property_elements = soup.find_all('div', {'data-test-id': 'search-result-item'})
+    soup = BeautifulSoup(html, "html.parser")
+    property_elements = soup.find_all("div", {"data-test-id": "search-result-item"})
 
     house_list = []
 
     for property_elem in property_elements:
-
         house = House()
 
         # Extract street name and house number
-        street_name_elem = property_elem.find('h2', {'data-test-id': 'street-name-house-number'})
+        street_name_elem = property_elem.find(
+            "h2", {"data-test-id": "street-name-house-number"}
+        )
         if street_name_elem:
             house.address = street_name_elem.text.strip()
 
         # Extract postal code and city
-        postal_code_elem = property_elem.find('div', {'data-test-id': 'postal-code-city'})
+        postal_code_elem = property_elem.find(
+            "div", {"data-test-id": "postal-code-city"}
+        )
         if postal_code_elem:
             house.city = postal_code_elem.text.strip()
 
         # Extract price
-        price_elem = property_elem.find('p', {'data-test-id': 'price-rent'})
+        price_elem = property_elem.find("p", {"data-test-id": "price-rent"})
         if price_elem:
             price = get_price(price_elem.text.strip())
             house.price = price
 
-
         # Extract details
-        details_elems = property_elem.find_all('li', {'class': 'flex-[0_0_auto]'})
+        details_elems = property_elem.find_all("li", {"class": "flex-[0_0_auto]"})
         for detail_elem in details_elems:
             detail_text = detail_elem.text.strip()
 
             # Split the detail text into key and value if there's a space
-            if ' ' in detail_text:
+            if " " in detail_text:
                 key, value = detail_text.split(maxsplit=1)
                 house.details[key] = value
             else:
-                house.details[detail_text] = ''
+                house.details[detail_text] = ""
 
         # Extract images
-        img_elem = property_elem.find('img', alt=True, srcset=True)
+        img_elem = property_elem.find("img", alt=True, srcset=True)
         if img_elem:
-            srcset = img_elem['srcset']
+            srcset = img_elem["srcset"]
             # Split the srcset into individual image URLs
-            srcset_parts = srcset.split(',')
+            srcset_parts = srcset.split(",")
             for srcset_part in srcset_parts:
                 # Extract the URL from the srcset part
                 image_url = srcset_part.split()[-2].strip()
                 house.images.append(image_url)
 
         # Extract link
-        link_elem = property_elem.find('a', {'data-test-id': 'object-image-link'}, href=True)
+        link_elem = property_elem.find(
+            "a", {"data-test-id": "object-image-link"}, href=True
+        )
         if link_elem:
-            house.link = link_elem['href']
+            house.link = link_elem["href"]
 
         house_list.append(house)
 

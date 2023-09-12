@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import sys
-sys.path.append('../')
+
+sys.path.append("../")
 from classes import House, Website
 from common import *
 
@@ -278,60 +279,56 @@ example_html = """
 </div>
 <input type="hidden" id="mgmMarker9370833e17bb84b99d4d528c9e3584567feb59" name="mgmMarker9370833e17bb84b99d4d528c9e3584567feb59" value="9370833e17bb84b99d4d528c9e3584567feb59~1~52.35137953,4.86622093~1075HS~Amsterdam~Amsterdam~Jan van Goyenkade~27~-1~WH~1~tussenverdieping~<span class=adres>Jan van Goyenkade 27-1</span> <span class=plaatsnaam>Amsterdam </span>~<b>Huurprijs</b><br/>€ 6.000&nbsp;per maand~6000~per maand~Huurprijs~6.000~https://www.rappange.com/jan-van-goyenkade-27-1-amsterdam-9370833e17bb84b99d4d528c9e3584567feb59~https://images.realworks.nl/servlets/images/media.objectmedia/146252429.jpg?portalid=4286&amp;check=api_sha256%3aa1769a152511cfc3e0e9f053c9863753946b1b670619d15bc1ec8d422e15e59b&amp;width=1440&amp;height=960~0~1~04/07/2023~1">"""
 
-def scrape_website(html):
 
-    soup = BeautifulSoup(html, 'html.parser')
+def scrape_website(html):
+    soup = BeautifulSoup(html, "html.parser")
 
     houses = []
 
-    articles = soup.find_all('div', class_='col-xs-12 object object-element2')
+    articles = soup.find_all("div", class_="col-xs-12 object object-element2")
 
     for article in articles:
-
         house = House()
 
         # Link
-        link_tag = article.find('a', class_='object-a-more')
+        link_tag = article.find("a", class_="object-a-more")
         if link_tag:
-            house.link = link_tag['href']
-
+            house.link = link_tag["href"]
 
         # Find images
-        img_tags = article.find_all('a', class_='object-a-photo')
+        img_tags = article.find_all("a", class_="object-a-photo")
         for img_tag in img_tags:
-            house.images.append(img_tag['data-src'])
+            house.images.append(img_tag["data-src"])
 
         # Address and City
-        address_container = article.find('span', class_='adres')
-        city_container = article.find('span', class_='plaatsnaam')
+        address_container = article.find("span", class_="adres")
+        city_container = article.find("span", class_="plaatsnaam")
         if address_container and city_container:
             house.city = city_container.text.strip()
             house.address = address_container.text.strip()
 
         # Price
-        price_container = article.find(class_='element_prijs2')
+        price_container = article.find(class_="element_prijs2")
         if price_container:
             house.price = get_price(price_container.text.strip())
 
         # Additional Details
-        details_container = article.find_all('div', class_='object-feature')
+        details_container = article.find_all("div", class_="object-feature")
         for detail in details_container:
-            label = detail.find('div', class_='features-title')
+            label = detail.find("div", class_="features-title")
             if label:
                 label = label.text.strip()
-                value = detail.find('div', class_='features-info').text.strip()
+                value = detail.find("div", class_="features-info").text.strip()
                 house.details[label] = value[:50]
 
         if house.price != None:
             if house.price < 10000:
-                
                 houses.append(house)
 
     return houses
 
 
 website = Website(url, example_html, scrape_website)
-
 
 
 # Run the scrape_example function to test the scraper
@@ -342,5 +339,3 @@ website = Website(url, example_html, scrape_website)
 # for house in houses[::-1]:
 #     house.print()
 #     print()
-
-

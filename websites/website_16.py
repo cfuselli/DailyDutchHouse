@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import sys
-sys.path.append('../')
+
+sys.path.append("../")
 from classes import House, Website
 from common import *
 
@@ -38,69 +39,63 @@ example_html = """
 
 """
 
-def scrape_website(html):
 
-    soup = BeautifulSoup(html, 'html.parser')
+def scrape_website(html):
+    soup = BeautifulSoup(html, "html.parser")
 
     houses = []
 
-    articles = soup.find_all('div', class_='col-12 col-sm-6 col-lg-4')
+    articles = soup.find_all("div", class_="col-12 col-sm-6 col-lg-4")
 
     for article in articles:
-
         house = House()
 
         # Link
-        link_tag = article.find('a', class_='propertyLink')
+        link_tag = article.find("a", class_="propertyLink")
         if link_tag:
-            house.link = link_tag['href']
-
+            house.link = link_tag["href"]
 
         # Find images
-        img_tags = article.find_all('img')
+        img_tags = article.find_all("img")
         for img_tag in img_tags:
-            house.images.append(img_tag['src'])
-
+            house.images.append(img_tag["src"])
 
         # Address
-        address_container = article.find('span', class_='street')
+        address_container = article.find("span", class_="street")
         if address_container:
             house.address = address_container.text.strip()
 
         # Address and City
-        address_container = article.find('span', class_='city')
+        address_container = article.find("span", class_="city")
         if address_container:
             house.city = address_container.text.strip()
 
         # Price
-        price_container = article.find(class_='price')
+        price_container = article.find(class_="price")
         if price_container:
             house.price = get_price(price_container.text.strip())
 
         # Additional Details
-        details_container = article.find('div', class_='bottom d-none d-md-block')
+        details_container = article.find("div", class_="bottom d-none d-md-block")
         if details_container:
-            details_container = details_container.find_all('li')
+            details_container = details_container.find_all("li")
             for detail in details_container:
                 if detail:
-                    label = detail.text.strip().split(':')[0]
+                    label = detail.text.strip().split(":")[0]
                     try:
-                        value = detail.text.strip().split(':')[1]
+                        value = detail.text.strip().split(":")[1]
                     except:
-                        value = ''
+                        value = ""
                     house.details[label] = value[:50]
-
 
         if house.price != None:
             if house.price < 10000:
-
                 houses.append(house)
 
     return houses
 
 
 website = Website(url, example_html, scrape_website)
-
 
 
 # Run the scrape_example function to test the scraper
@@ -111,5 +106,3 @@ website = Website(url, example_html, scrape_website)
 # for house in houses[::-1]:
 #     house.print()
 #     print()
-
-

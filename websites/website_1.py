@@ -1,11 +1,12 @@
 from bs4 import BeautifulSoup
 import sys
-sys.path.append('../')
+
+sys.path.append("../")
 from classes import House, Website
 from common import *
 import os
 
-base_url = 'https://ikwilhuren.nu'
+base_url = "https://ikwilhuren.nu"
 url = "https://ikwilhuren.nu/aanbod/direct-beschikbaar/"
 
 example_html = """
@@ -53,9 +54,10 @@ example_html = """
                                     </div>
 """
 
+
 def scrape_website(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    property_elements = soup.find_all('div', class_='card-woning')
+    soup = BeautifulSoup(html, "html.parser")
+    property_elements = soup.find_all("div", class_="card-woning")
 
     house_list = []
 
@@ -63,41 +65,45 @@ def scrape_website(html):
         house = House()
 
         # Extract title and link
-        title_elem = property_elem.find('h3', class_='card-title')
+        title_elem = property_elem.find("h3", class_="card-title")
         if title_elem:
             house.address = title_elem.text.strip()
-            link_elem = title_elem.find('a', href=True)
+            link_elem = title_elem.find("a", href=True)
             if link_elem:
-                house.link = base_url+link_elem['href']
+                house.link = base_url + link_elem["href"]
 
         # Extract city
-        city_elem = property_elem.find('span', text=True)
+        city_elem = property_elem.find("span", text=True)
         if city_elem:
             city_parts = city_elem.text.strip().split()
             if len(city_parts) > 1:
                 house.city = city_parts[1]
 
         # Extract price
-        price_elem = property_elem.find('span', class_='fw-bold')
+        price_elem = property_elem.find("span", class_="fw-bold")
         if price_elem:
             house.price = get_price(price_elem.text.strip())
 
-         # Extract details
-        details_elem = property_elem.find('div', class_='pt-4')
+        # Extract details
+        details_elem = property_elem.find("div", class_="pt-4")
         if details_elem:
-            details_spans = details_elem.find_all('span', class_='fw-bold')
+            details_spans = details_elem.find_all("span", class_="fw-bold")
             if len(details_spans) >= 2:
-                house.details['Area'] = details_spans[1].text.strip()
-                room_span = details_elem.find('span', text=re.compile(r'\d+\s+slaapkamers'))
+                house.details["Area"] = details_spans[1].text.strip()
+                room_span = details_elem.find(
+                    "span", text=re.compile(r"\d+\s+slaapkamers")
+                )
                 if room_span:
-                    rooms = re.search(r'(\d+)\s+slaapkamers', room_span.text)
+                    rooms = re.search(r"(\d+)\s+slaapkamers", room_span.text)
                     if rooms:
-                        house.details['Rooms'] = rooms.group(1)
+                        house.details["Rooms"] = rooms.group(1)
 
         # Extract images
-        image_elem = property_elem.find('img', src=True)
+        image_elem = property_elem.find("img", src=True)
         if image_elem:
-            house.images.append(base_url + '/media/'+ image_elem['src'].split('/media/')[1])
+            house.images.append(
+                base_url + "/media/" + image_elem["src"].split("/media/")[1]
+            )
 
         house_list.append(house)
 
@@ -147,7 +153,7 @@ def scrape_website(html):
 # 		house_list.append(house)
 
 # 	return house_list
-	
+
 # Create instances of the Website class for each website
 website = Website(url, example_html, scrape_website)
 

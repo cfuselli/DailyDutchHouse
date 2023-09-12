@@ -1,7 +1,7 @@
-
 from bs4 import BeautifulSoup
 import sys
-sys.path.append('../')
+
+sys.path.append("../")
 from classes import House, Website
 from common import *
 
@@ -52,54 +52,52 @@ example_html = """
 
 
 def scrape_website(html):
-
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html, "html.parser")
     houses = []
 
     # Assuming each listing is contained within a 'li' tag with the class 'listing'
-    listings = soup.find_all('li', class_='listing')
+    listings = soup.find_all("li", class_="listing")
 
     for listing in listings:
         house = House()
 
         # URL and Image
-        url_img_tag = listing.find('a', class_='listing-featured-image')
+        url_img_tag = listing.find("a", class_="listing-featured-image")
         if url_img_tag:
-            house.link = url_img_tag['href']
-            img_tag = url_img_tag.find('img')
-            if img_tag and 'src' in img_tag.attrs:
-                house.images.append(img_tag['src'])
+            house.link = url_img_tag["href"]
+            img_tag = url_img_tag.find("img")
+            if img_tag and "src" in img_tag.attrs:
+                house.images.append(img_tag["src"])
 
         # Address
-        address_tag = listing.find('h4')
+        address_tag = listing.find("h4")
         if address_tag:
             house.address = address_tag.text.strip()
 
         # Location
-        location_tag = listing.find('p', class_='location')
+        location_tag = listing.find("p", class_="location")
         if location_tag:
             house.city = location_tag.text.strip()
 
         # Price
-        price_tag = listing.find('span', class_='listing-price')
+        price_tag = listing.find("span", class_="listing-price")
         if price_tag:
             price = get_price(price_tag.text.strip())
             house.price = price
 
         # Details
-        prop_info_tags = listing.find_all('li')
+        prop_info_tags = listing.find_all("li")
         for tag in prop_info_tags:
-            left_span = tag.find('span', class_='muted left')
-            right_span = tag.find('span', class_='right')
+            left_span = tag.find("span", class_="muted left")
+            right_span = tag.find("span", class_="right")
             if left_span and right_span:
-                key = left_span.text.strip().replace(':', '')
+                key = left_span.text.strip().replace(":", "")
                 value = right_span.text.strip()
                 house.details[key] = value
 
         houses.append(house)
 
     return houses
-
 
 
 website = Website(url, example_html, scrape_website)
@@ -113,5 +111,3 @@ website = Website(url, example_html, scrape_website)
 # for house in houses[::-1]:
 #     house.print()
 #     print()
-
-

@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+
 # Define a House class to store property information
 class House:
     def __init__(self):
@@ -31,7 +32,6 @@ class House:
         return house_dict
 
     def print(self):
-
         print(f" - Address: {self.address}")
         print(f" - City: {self.city}")
         print(f" - Price: {self.price} €")
@@ -45,8 +45,7 @@ class House:
         print()
 
     def write_to_file(self, file_path):
-        with open(file_path, 'a', encoding='utf-8') as file:
-
+        with open(file_path, "a", encoding="utf-8") as file:
             file.write(f"---- House ----\n")
             file.write(f"Address: {self.address}\n")
             file.write(f"City: {self.city}\n")
@@ -56,6 +55,7 @@ class House:
                 file.write(f"  {key}: {value}\n")
             file.write(f"Link: {self.link}\n\n")
 
+
 class Website:
     def __init__(self, url, example_html=None, parser=None):
         self.url = url
@@ -63,7 +63,8 @@ class Website:
         self.parser = parser
         self.houses = []
         self.headers = {
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36"}
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36"
+        }
 
     def scrape(self, html):
         if self.parser:
@@ -72,9 +73,8 @@ class Website:
         else:
             print("No parser defined")
             return []
-        
+
     def scrape_example(self):
-           
         response = requests.get(self.url, headers=self.headers)
 
         if response.status_code == 200:

@@ -55,9 +55,10 @@ example_html = """
 </article>
 """
 
+
 def scrape_website(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    property_elements = soup.find_all('article', class_='result')
+    soup = BeautifulSoup(html, "html.parser")
+    property_elements = soup.find_all("article", class_="result")
 
     house_list = []
 
@@ -65,42 +66,43 @@ def scrape_website(html):
         house = House()
 
         # Extract address and city
-        address_elem = property_elem.find('h2', class_='result__address')
+        address_elem = property_elem.find("h2", class_="result__address")
         if address_elem:
             address_text = address_elem.text.strip()
             parts = address_text.split()
             if len(parts) >= 2:
-                house.address = ' '.join(parts[:-1])
+                house.address = " ".join(parts[:-1])
                 house.city = parts[-1]
 
         # Extract price
-        price_elem = property_elem.find('strong', class_='result__price')
+        price_elem = property_elem.find("strong", class_="result__price")
         if price_elem:
             house.price = get_price(price_elem.text.strip())
 
         # Extract details
-        details_elems = property_elem.find_all('li', class_='result__data-item')
+        details_elems = property_elem.find_all("li", class_="result__data-item")
         for detail_elem in details_elems:
             detail_text = detail_elem.text.strip()
             # Split the detail text into key and value if there's a space
-            if ' ' in detail_text:
+            if " " in detail_text:
                 key, value = detail_text.split(maxsplit=1)
                 house.details[key] = value
             else:
-                house.details[detail_text] = ''
+                house.details[detail_text] = ""
 
-        image_elems = property_elem.find_all('img', src=True)
+        image_elems = property_elem.find_all("img", src=True)
         for image_elem in image_elems:
-            house.images.append(image_elem['src'])
+            house.images.append(image_elem["src"])
 
         # Extract link
-        link_elem = property_elem.find('a', class_='button--secondary', href=True)
+        link_elem = property_elem.find("a", class_="button--secondary", href=True)
         if link_elem:
-            house.link = link_elem['href']
+            house.link = link_elem["href"]
 
         house_list.append(house)
 
     return house_list
+
 
 # Create an instance of the Website class for the third website
 website = Website(url, example_html, scrape_website)

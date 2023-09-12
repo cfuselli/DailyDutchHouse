@@ -11,6 +11,7 @@ from maps import get_geodata
 import get_websites
 import importlib
 
+
 def scrape_and_insert(websites_list):
     all_houses = []
     add_houses = []
@@ -58,8 +59,8 @@ def scrape_and_insert(websites_list):
 
     # Populate geodata
     for house in add_dicts:
-        geodata = get_geodata(house['address']+" "+house['city'])
-        house['geodata'] = geodata
+        geodata = get_geodata(house["address"] + " " + house["city"])
+        house["geodata"] = geodata
 
     if add_dicts:
         db.insert_many(add_dicts)
@@ -71,7 +72,6 @@ def scrape_and_insert(websites_list):
 # Run the script in an infinite loop
 while True:
     try:
-
         importlib.reload(get_websites)
         websites_list = get_websites.get_websites_list()
         scrape_and_insert(websites_list)

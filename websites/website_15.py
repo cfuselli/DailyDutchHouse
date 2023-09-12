@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import sys
-sys.path.append('../')
+
+sys.path.append("../")
 from classes import House, Website
 from common import *
 
@@ -64,66 +65,59 @@ Utilities incl.                        </span>
     </div>
 </div>"""
 
-def scrape_website(html):
 
-    soup = BeautifulSoup(html, 'html.parser')
+def scrape_website(html):
+    soup = BeautifulSoup(html, "html.parser")
 
     houses = []
 
-    articles = soup.find_all('div', class_='rowSearchResultRoom col s12 m6 l4')
+    articles = soup.find_all("div", class_="rowSearchResultRoom col s12 m6 l4")
 
     for article in articles:
-
         house = House()
 
         # Link
-        link_tag = article.find('a', class_='tile-title truncate')
+        link_tag = article.find("a", class_="tile-title truncate")
         if link_tag:
-            house.link = link_tag['href']
-
+            house.link = link_tag["href"]
 
         # Find images
-        img_tags = article.find_all('img')
+        img_tags = article.find_all("img")
         for img_tag in img_tags:
-            house.images.append(img_tag['data-src'])
+            house.images.append(img_tag["data-src"])
 
-
-        # Address 
-        address_container = article.find('a', class_='tile-title truncate')
+        # Address
+        address_container = article.find("a", class_="tile-title truncate")
         if address_container:
             house.address = address_container.text.strip()
 
         # Address and City
-        address_container = article.find('div', class_='tile-city')
+        address_container = article.find("div", class_="tile-city")
         if address_container:
             house.city = address_container.text.strip()
 
         # Price
-        price_container = article.find(class_='tile-rent')
+        price_container = article.find(class_="tile-rent")
         if price_container:
             house.price = get_price(price_container.text.strip())
 
         # Additional Details
-        details_container = article.find_all('div', class_='tile-details')
+        details_container = article.find_all("div", class_="tile-details")
         for detail in details_container:
-            label = detail.find('div', class_='tile-surface')
+            label = detail.find("div", class_="tile-surface")
             if label:
                 label = label.text.strip()
-                value = detail.find('div', class_='tile-furnished').text.strip()
+                value = detail.find("div", class_="tile-furnished").text.strip()
                 house.details[label] = value[:50]
 
         if house.price != None:
             if house.price < 10000:
-                
                 houses.append(house)
 
     return houses
 
 
-
-
 website = Website(url, example_html, scrape_website)
-
 
 
 # Run the scrape_example function to test the scraper
@@ -134,5 +128,3 @@ website = Website(url, example_html, scrape_website)
 # for house in houses[::-1]:
 #     house.print()
 #     print()
-
-
