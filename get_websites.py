@@ -87,4 +87,8 @@ def get_websites_list():
 
     websites_list.append(website)
 
+    from websites.website_21 import website
+
+    websites_list.append(website)
+
     return websites_list
