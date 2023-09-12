@@ -325,9 +325,6 @@ def scrape_website(html):
         if house.price != None:
             if house.price < 10000:
                 
-                print(img_tags)
-                print('------------------')
-
                 houses.append(house)
 
     return houses
