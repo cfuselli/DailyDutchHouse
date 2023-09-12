@@ -76,7 +76,7 @@ while True:
         websites_list = get_websites.get_websites_list()
         scrape_and_insert(websites_list)
         # Sleep for an hour (3600 seconds) before running again
-        time.sleep(300)
+        time.sleep(60)
     except Exception as e:
         print(f"An error occurred: {e}")
         time.sleep(60)
