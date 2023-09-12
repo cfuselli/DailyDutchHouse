@@ -52,5 +52,8 @@ def get_websites_list():
     from websites.website_15 import website
     websites_list.append(website)
 
+    from websites.website_16 import website
+    websites_list.append(website)
+    
     return websites_list
 
