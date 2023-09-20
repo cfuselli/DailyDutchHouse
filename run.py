@@ -25,30 +25,37 @@ def scrape_and_insert(websites_list):
         house_n = 1  # Initialize to 1 if there are no existing houses
 
     for website in websites_list:
+
+        
         print("-----------")
         print(f"New website {website.url}")
         print("-----------")
 
-        website.scrape_example()
+        try:
 
-        for i, house in enumerate(website.houses):
-            if i == 1:
-                print(f"House info:")
-                house.print()
+            website.scrape_example()
 
-            existing_house = db.find_one({"link": house.link})
+            for i, house in enumerate(website.houses):
+                if i == 1:
+                    print(f"House info:")
+                    house.print()
 
-            if not existing_house:
-                # Add the current date and house number to the house data
-                house.date = datetime.now()
-                house.house_n = house_n
-                add_houses.append(house)
+                existing_house = db.find_one({"link": house.link})
 
-                # Increment the house number and update the last inserted house number in the database
-                house_n += 1
+                if not existing_house:
+                    # Add the current date and house number to the house data
+                    house.date = datetime.now()
+                    house.house_n = house_n
+                    add_houses.append(house)
 
-            all_houses.append(house)
+                    # Increment the house number and update the last inserted house number in the database
+                    house_n += 1
 
+                all_houses.append(house)
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            
     print("--------------------")
     print(f"Total houses: {len(all_houses)}")
     print(f"New houses: {len(add_houses)}")
