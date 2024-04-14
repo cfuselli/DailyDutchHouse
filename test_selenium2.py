@@ -1,6 +1,28 @@
 from selenium import webdriver
 
-driver = webdriver.Chrome()
+# import options
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+# if on my mac, do nothing, if on the server, set the binary location
+#
+# if the location of home is /home/runner, then it is on the server
+if os.path.expanduser('~') == '/home/carlo': 
+    print('On the server')
+    options.binary_location = '/usr/bin/chromium-browser'  # or '/snap/bin/chromium' if the other doesn't work
+else:
+    pass
+
+
+options.add_argument("--headless")  # Ensure headless mode is activated
+options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
+options.add_argument("--no-sandbox")  # Bypass OS security model, required on many systems
+options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+options.add_argument("enable-automation")  # Avoid popup about automated software
+options.add_argument("--disable-infobars")  # Disable info bars from Chrome
+options.add_argument("--disable-extensions")  # Disable extensions
+options.add_argument("--window-size=1920,1080")  # Specify browser resolution
+driver = webdriver.Chrome(options=options)
 
 driver.get("http://selenium.dev")
 
