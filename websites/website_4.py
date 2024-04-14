@@ -95,6 +95,8 @@ def scrape_website(html):
     soup = BeautifulSoup(html, "html.parser")
     property_elements = soup.find_all("section", class_="listing-search-item")
 
+    print(f"Found {len(property_elements)} properties")
+
     house_list = []
 
     for property_elem in property_elements:

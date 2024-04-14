@@ -35,6 +35,9 @@ def scrape_and_insert(websites_list):
 
             website.scrape_example()
 
+            if not website.houses:
+                website.scrape_selenium()
+
             for i, house in enumerate(website.houses):
                 if i == 1:
                     print(f"House info:")
@@ -83,7 +86,7 @@ while True:
         websites_list = get_websites.get_websites_list()
         scrape_and_insert(websites_list)
         # Sleep for an hour (3600 seconds) before running again
-        time.sleep(60)
+        time.sleep(60*4)
     except Exception as e:
         print(f"An error occurred: {e}")
-        time.sleep(60)
+        time.sleep(60*4)
