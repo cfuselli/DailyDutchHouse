@@ -1,5 +1,4 @@
 from selenium import webdriver
-import chromedriver_binary  # Adds chromedriver binary to path
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
