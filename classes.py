@@ -80,21 +80,25 @@ class Website:
             print("No parser defined")
             return []
 
-    def scrape_example(self):
+    def scrape_example(self, print_html=False):
         response = requests.get(self.url, headers=self.headers)
 
         if response.status_code == 200:
             html = response.text
+            if print_html:
+                print(html)
             print(f"Response with {len(html)} characters")
             return self.scrape(html)
         else:
             print(f"Failed to retrieve data from {self.url}")
             print(response.status_code)
+
+
             print(response.text)
             print()
             return []
 
-    def scrape_selenium(self):
+    def scrape_selenium(self, print_html=False):
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
         from webdriver_manager.chrome import ChromeDriverManager
@@ -103,7 +107,6 @@ class Website:
 
         # Set up Chrome options for headless mode
         options = Options()
-        options.binary_location = '/snap/chromium'  # Specify the path to Chromium
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
@@ -129,22 +132,27 @@ class Website:
         driver.get(self.url)
         time.sleep(2)
         html = driver.page_source
+        if print_html:
+            print(html)
+        driver.quit()
         print(f"Response with {len(html)} characters")
         return self.scrape(html)
 
-    def scrape_requests_html(self):
+    def scrape_requests_html(self, print_html=False):
         from requests_html import HTMLSession
         session = HTMLSession()
         try:
             response = session.get(self.url, headers=self.headers)
             response.html.render()
+            if print_html:
+                print(response.html.html)
             print(f"Response with {len(response.html.html)} characters")
             return self.scrape(response.html.html)
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
 
-    def scrape_pyppeteer(self):
+    def scrape_pyppeteer(self, print_html=False):
         from pyppeteer import launch
 
         async def main():
@@ -153,6 +161,8 @@ class Website:
             await page.goto(self.url)
             html = await page.content()
             print(f"Response with {len(html)} characters")
+            if print_html:
+                print(html)
             await browser.close()
             return self.scrape(html)
 
