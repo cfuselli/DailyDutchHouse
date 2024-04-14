@@ -31,6 +31,7 @@ options.add_argument("--window-size=1920,1080")  # Specify browser resolution
 try:
     service = Service(ChromeDriverManager().install())
 except:
+    print('Failed to install the driver, trying with a specific version')
     service = Service(ChromeDriverManager('123.0.6312.105').install())
 
 
