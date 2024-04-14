@@ -36,7 +36,8 @@ def scrape_and_insert(websites_list):
             website.scrape_example()
 
             if not website.houses:
-                website.scrape_selenium()
+                pass
+                #website.scrape_selenium()
 
             for i, house in enumerate(website.houses):
                 if i == 1:

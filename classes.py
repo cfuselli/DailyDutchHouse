@@ -103,6 +103,7 @@ class Website:
 
         # Set up Chrome options for headless mode
         options = Options()
+        options.binary_location = '/snap/chromium'  # Specify the path to Chromium
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
@@ -117,7 +118,13 @@ class Website:
         options.add_argument("--disable-background-timer-throttling")
         options.add_argument("--disable-sync")
         # Initialize WebDriver
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        try:
+            service = Service(ChromeDriverManager().install())
+        except:
+            service = Service(ChromeDriverManager('123.0.6312.105').install())
+
+
+        driver = webdriver.Chrome(service=service, options=options)
 
         driver.get(self.url)
         time.sleep(2)
