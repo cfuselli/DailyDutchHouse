@@ -38,7 +38,7 @@ except:
 driver = webdriver.Chrome(service=service, options=options)
 
 # Load the webpage
-driver.get('https://www.pararius.nl/huurwoningen/amsterdam')
+driver.get('https://www.google.com')
 
 # Wait for JavaScript to load and for the page to be fully rendered
 time.sleep(2)  # Adjust sleep time based on the specific needs and response times of the website
