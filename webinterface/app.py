@@ -43,7 +43,7 @@ def index():
             api_key_geoapify=secrets["api_key_geoapify"],
         )
 
-    houses = db.find().sort("date", pymongo.DESCENDING)
+    houses = db.find().sort("date", pymongo.DESCENDING).limit(100)
     houses = [house for house in houses]
 
     print(f"Total houses: {len(houses)}")
